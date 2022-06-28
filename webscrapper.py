@@ -1,4 +1,4 @@
-import requests, json, re
+import requests, json, re, os
 from bs4 import BeautifulSoup
 
 ERGAST_REQUEST = "https://ergast.com/api/f1/current/next.json"
@@ -80,7 +80,6 @@ def extract_race(url, year, race):
             else:
                 parse_results(results, page, times)
         except:
-            print("Fail")
             continue
 
     date = soup.find_all("p", {"class": "race-weekend-dates"})[0].text.strip()
@@ -89,6 +88,9 @@ def extract_race(url, year, race):
         results["placements"] = [k for k in results["js-qualifying"]]
 
     results["track-name"] = f'{date} {year} ({re.findall(r"/([^//]+).html", url)[0]})'
+
+    if not os.path.isdir(f"races/{year}"):
+        os.mkdir(f"races/{year}")
 
     with open(f"races/{year}/{race}.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4)
@@ -102,7 +104,7 @@ def parse_results(d, round, results):
     d[round] = round_d
 
 def get_url(year, round):
-    url = SCHEDULE_F1_REQUEST.replace("{year}", year)
+    url = SCHEDULE_F1_REQUEST.replace("{year}", str(year))
 
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
