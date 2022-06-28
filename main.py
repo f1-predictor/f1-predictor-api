@@ -1,8 +1,8 @@
 from flask import Flask, request
 from flask_cors import CORS
-import json
 from os import scandir, listdir
 from os.path import isfile, join
+import json
 
 app = Flask(__name__)
 CORS(app)

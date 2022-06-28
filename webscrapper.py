@@ -1,6 +1,10 @@
 import requests, json, re
 from bs4 import BeautifulSoup
 
+ERGAST_REQUEST = "https://ergast.com/api/f1/current/next.json"
+SCHEDULE_F1_REQUEST = "https://www.formula1.com/en/racing/{year}.html"
+BASE_F1_REQUEST = "https://www.formula1.com"
+
 def extract_practice_times(url):
     """
     Extracts the times from the url (practice rounds)
@@ -83,7 +87,7 @@ def extract_race(url, year, race):
 
     if "js-qualifying" in results:
         results["placements"] = [k for k in results["js-qualifying"]]
-        
+
     results["track-name"] = f'{date} {year} ({re.findall(r"/([^//]+).html", url)[0]})'
 
     with open(f"races/{year}/{race}.json", "w", encoding="utf-8") as f:
@@ -97,5 +101,19 @@ def parse_results(d, round, results):
         round_d[result[0]] = result[1]
     d[round] = round_d
 
-extract_race("https://www.formula1.com/en/racing/2022/Bahrain.html", 2022, 1)
-extract_race("https://www.formula1.com/en/racing/2022/Great_Britain.html", 2022, 10)
+def automatically_extract_results():
+    response = requests.get(ERGAST_REQUEST)
+    data = json.loads(response.text)
+
+    year = data["MRData"]["RaceTable"]["season"]
+    round = data["MRData"]["RaceTable"]["round"]
+    url = SCHEDULE_F1_REQUEST.replace("{year}", year)
+
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    link = soup.find_all("a", {"data-roundtext": f"ROUND {round}"})[0]["href"]
+
+    extract_race(BASE_F1_REQUEST + link, year, round)
+
+automatically_extract_results()
