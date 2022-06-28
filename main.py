@@ -47,13 +47,9 @@ def get_rounds():
                 data = json.load(f)
                 track_name = re.findall(r"\((.+)\)", data["track-name"])[0]
 
-                if year == "2021":
-                    print(filename, track_name)
-
                 files.append(track_name)
 
         rounds[year] = files
-        print(files)
 
     return rounds
 
