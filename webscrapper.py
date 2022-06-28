@@ -101,19 +101,23 @@ def parse_results(d, round, results):
         round_d[result[0]] = result[1]
     d[round] = round_d
 
-def automatically_extract_results():
-    response = requests.get(ERGAST_REQUEST)
-    data = json.loads(response.text)
-
-    year = data["MRData"]["RaceTable"]["season"]
-    round = data["MRData"]["RaceTable"]["round"]
+def get_url(year, round):
     url = SCHEDULE_F1_REQUEST.replace("{year}", year)
 
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
     link = soup.find_all("a", {"data-roundtext": f"ROUND {round}"})[0]["href"]
+    return BASE_F1_REQUEST + link
 
-    extract_race(BASE_F1_REQUEST + link, year, round)
+def automatically_extract_results():
+    response = requests.get(ERGAST_REQUEST)
+    data = json.loads(response.text)
+
+    year = data["MRData"]["RaceTable"]["season"]
+    round = data["MRData"]["RaceTable"]["round"]
+    url = get_url(year, round)
+
+    extract_race(url, year, round)
 
 automatically_extract_results()
