@@ -92,7 +92,7 @@ def extract_race(url, year, race):
     if not os.path.isdir(f"races/{year}"):
         os.mkdir(f"races/{year}")
 
-    with open(f"races/{year}/{race}.json", "w", encoding="utf-8") as f:
+    with open(f"races/{year}/{str(race).zfill(2)}.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4)
 
 def parse_results(d, round, results):
