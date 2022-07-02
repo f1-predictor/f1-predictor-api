@@ -44,6 +44,8 @@ def get_rounds():
         year = folder.split("\\")[1]
         filenames = [f for f in listdir(folder) if isfile(join(folder, f))]
 
+        print(filenames)
+
         for filename in filenames:
             with open(f"races/{year}/{filename}", encoding="utf-8") as f:
                 data = json.load(f)

@@ -83,11 +83,12 @@ def extract_race(url, year, race):
             continue
 
     date = soup.find_all("p", {"class": "race-weekend-dates"})[0].text.strip()
+    country = soup.find_all("h1", {"class": "race-location"})[0].text.strip()
 
     if "js-qualifying" in results:
         results["placements"] = [k for k in results["js-qualifying"]]
 
-    results["track-name"] = f'{date} {year} ({re.findall(r"/([^//]+).html", url)[0]})'
+    results["track-name"] = f'{date} {year} ({country[:-4]})'
 
     if not os.path.isdir(f"races/{year}"):
         os.mkdir(f"races/{year}")
