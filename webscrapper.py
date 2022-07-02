@@ -1,4 +1,4 @@
-import requests, json, re, os
+import requests, json, re, os, threading
 from bs4 import BeautifulSoup
 
 ERGAST_REQUEST = "https://ergast.com/api/f1/current/next.json"
@@ -113,13 +113,14 @@ def get_url(year, round):
     return BASE_F1_REQUEST + link
 
 def automatically_extract_results():
+    # Run this function every half an hour
+    threading.Timer(60 * 30, automatically_extract_results).start()
     response = requests.get(ERGAST_REQUEST)
     data = json.loads(response.text)
 
     year = data["MRData"]["RaceTable"]["season"]
     round = data["MRData"]["RaceTable"]["round"]
+
     url = get_url(year, round)
 
     extract_race(url, year, round)
-
-automatically_extract_results()

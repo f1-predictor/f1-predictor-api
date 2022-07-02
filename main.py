@@ -4,6 +4,8 @@ from os import scandir, listdir
 from os.path import isfile, join
 import json, re
 
+from webscrapper import automatically_extract_results
+
 app = Flask(__name__)
 CORS(app)
 
@@ -53,4 +55,5 @@ def get_rounds():
 
     return rounds
 
+automatically_extract_results()
 app.run(host="0.0.0.0", port=8080)
