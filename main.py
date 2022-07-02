@@ -13,7 +13,7 @@ def home():
 
 @app.route("/last_results", methods=["GET"])
 def get_last_race_details():
-    folder = [f.path for f in scandir("races") if f.is_dir()][0]
+    folder = [f.path for f in scandir("races") if f.is_dir()][-1]
     files = [f for f in listdir(folder) if isfile(join(folder, f))][-2:]
 
     with open(f"{folder}/{files[-1]}", encoding="utf-8") as f:
